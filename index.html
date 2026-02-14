@@ -5,39 +5,194 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChargeShare</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="app">
-        <h1>ChargeShare</h1>
-        <p>Power Anytime, Anywhere</p>
-        
-        <button id="findStationBtn">Find Nearest Station</button>
-        
-        <div class="map" id="map"></div>
-        <div class="map-caption" id="mapCaption">
-            Click "Find Nearest Station" to locate charging stations
-        </div>
-        
-        <button id="rentPowerBtn">Scan & Rent Power Bank</button>
-        
-        <!-- QR Scanner Section (Hidden by default) -->
-        <div class="qr-scanner" id="qrScanner" style="display: none;">
-            <div class="scanner-header">
-                <h3>Scan QR Code</h3>
-                <button class="close-btn" id="closeScannerBtn">✕</button>
+    <!-- Mobile View -->
+    <div class="mobile-view">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-charging-station"></i>
+                <span>ChargeShare</span>
             </div>
-            <div id="qrReader"></div>
-            <p class="scanner-instruction">Point camera at QR code on power bank</p>
+        </header>
+
+        <!-- Full Screen Map -->
+        <div class="map-container" id="map"></div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item" id="findNavBtn">
+                <i class="fas fa-search"></i>
+                <span>Find</span>
+            </button>
+            <button class="nav-item" id="scanNavBtn">
+                <i class="fas fa-qrcode"></i>
+                <span>Scan</span>
+            </button>
+            <button class="nav-item" id="statusNavBtn">
+                <i class="fas fa-info-circle"></i>
+                <span>Status</span>
+            </button>
+        </nav>
+
+        <!-- Find Drawer -->
+        <div class="drawer" id="findDrawer">
+            <div class="drawer-header">
+                <h2>Find Nearest Station</h2>
+                <button class="close-drawer" data-drawer="findDrawer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="drawer-content">
+                <button class="action-btn" id="locateMeBtn">
+                    <i class="fas fa-location-arrow"></i>
+                    <span>Locate Me</span>
+                </button>
+                <div class="station-list" id="stationList">
+                    <p class="placeholder-text">Click "Locate Me" to find nearby stations</p>
+                </div>
+            </div>
         </div>
-        
-        <button id="returnPowerBtn">Return Power Bank</button>
-        
-        <div class="status" id="status">
-            Status: Not Renting
+
+        <!-- Scan Drawer -->
+        <div class="drawer" id="scanDrawer">
+            <div class="drawer-header">
+                <h2>Scan Power Bank</h2>
+                <button class="close-drawer" data-drawer="scanDrawer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="drawer-content">
+                <div class="qr-reader-container" id="qrReader"></div>
+                <p class="scanner-instruction">Point your camera at the QR code on the power bank</p>
+            </div>
+        </div>
+
+        <!-- Status Drawer -->
+        <div class="drawer" id="statusDrawer">
+            <div class="drawer-header">
+                <h2>Connection Status</h2>
+                <button class="close-drawer" data-drawer="statusDrawer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="drawer-content">
+                <div class="status-container" id="statusContainer">
+                    <div class="status-icon">
+                        <i class="fas fa-plug-circle-xmark"></i>
+                    </div>
+                    <h3>Not Connected</h3>
+                    <p>Scan a power bank QR code to get started</p>
+                </div>
+            </div>
         </div>
     </div>
-    
+
+    <!-- Desktop View -->
+    <div class="desktop-view">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-charging-station"></i>
+                    <span>ChargeShare</span>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="sidebar-section">
+                <button class="desktop-action-btn" id="desktopLocateBtn">
+                    <i class="fas fa-location-arrow"></i>
+                    <span>Find Nearest Station</span>
+                </button>
+            </div>
+
+            <!-- Station List -->
+            <div class="sidebar-section">
+                <h3 class="section-title">Charging Stations</h3>
+                <div class="desktop-station-list" id="desktopStationList">
+                    <div class="station-card" data-station="0">
+                        <div class="station-icon">
+                            <i class="fas fa-charging-station"></i>
+                        </div>
+                        <div class="station-info">
+                            <h4>School Canteen</h4>
+                            <p class="station-distance">Click to view location</p>
+                        </div>
+                    </div>
+                    <div class="station-card" data-station="1">
+                        <div class="station-icon">
+                            <i class="fas fa-charging-station"></i>
+                        </div>
+                        <div class="station-info">
+                            <h4>Library</h4>
+                            <p class="station-distance">Click to view location</p>
+                        </div>
+                    </div>
+                    <div class="station-card" data-station="2">
+                        <div class="station-icon">
+                            <i class="fas fa-charging-station"></i>
+                        </div>
+                        <div class="station-info">
+                            <h4>ICT Building</h4>
+                            <p class="station-distance">Click to view location</p>
+                        </div>
+                    </div>
+                    <div class="station-card" data-station="3">
+                        <div class="station-icon">
+                            <i class="fas fa-charging-station"></i>
+                        </div>
+                        <div class="station-info">
+                            <h4>CCB Building</h4>
+                            <p class="station-distance">Click to view location</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Section -->
+            <div class="sidebar-section">
+                <button class="desktop-action-btn secondary" id="desktopScanBtn">
+                    <i class="fas fa-qrcode"></i>
+                    <span>Scan Power Bank</span>
+                </button>
+            </div>
+
+            <!-- Status Section -->
+            <div class="sidebar-section" id="desktopStatusSection">
+                <h3 class="section-title">Status</h3>
+                <div class="desktop-status" id="desktopStatus">
+                    <div class="status-badge disconnected">
+                        <i class="fas fa-plug-circle-xmark"></i>
+                        <span>Not Connected</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Map -->
+        <div class="desktop-map" id="desktopMap"></div>
+
+        <!-- Desktop Scan Modal -->
+        <div class="modal" id="desktopScanModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Scan Power Bank</h2>
+                    <button class="close-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="qr-reader-container" id="desktopQrReader"></div>
+                    <p class="scanner-instruction">Point your camera at the QR code</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="script.js"></script>
